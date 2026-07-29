@@ -13,7 +13,7 @@ const Auth = {
      * Auto-refreshes expired tokens.
      */
     async init() {
-        const token = Storage.get(CONFIG.TOKEN.ACCESS_TOKEN_KEY);
+        const token = AppStorage.get(CONFIG.TOKEN.ACCESS_TOKEN_KEY);
         if (token) {
             ApiClient.init(token);
             try {
@@ -38,7 +38,7 @@ const Auth = {
                     }
                 } catch (e) {
                     // Refresh failed, clear storage
-                    Storage.clearAuth();
+                    AppStorage.clearAuth();
                 }
             }
         }
@@ -59,7 +59,7 @@ const Auth = {
         const data = await ApiClient.login(usernameOrEmail, password);
         if (data.success) {
             ApiClient.setAccessToken(data.accessToken);
-            Storage.set(CONFIG.TOKEN.ACCESS_TOKEN_KEY, data.accessToken);
+            AppStorage.set(CONFIG.TOKEN.ACCESS_TOKEN_KEY, data.accessToken);
             this._user = data.user;
             this._notify();
         }
@@ -73,7 +73,7 @@ const Auth = {
         const data = await ApiClient.register(username, email, password);
         if (data.success) {
             ApiClient.setAccessToken(data.accessToken);
-            Storage.set(CONFIG.TOKEN.ACCESS_TOKEN_KEY, data.accessToken);
+            AppStorage.set(CONFIG.TOKEN.ACCESS_TOKEN_KEY, data.accessToken);
             this._user = data.user;
             this._notify();
         }
@@ -109,7 +109,7 @@ const Auth = {
      */
     _cleanup() {
         ApiClient.clearAccessToken();
-        Storage.clearAuth();
+        AppStorage.clearAuth();
         this._user = null;
         this._notify();
         window.location.href = 'login.html';
