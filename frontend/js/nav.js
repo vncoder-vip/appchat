@@ -10,12 +10,14 @@
 
     /**
      * Render nav actions based on auth state.
+     * PRIORITY: Token in storage > Auth.isAuthenticated()
+     * This prevents the nav from showing "Sign In" during Vercel cold start.
      */
     function renderNavActions() {
         const navActions = document.querySelector(NAV_ACTIONS_SELECTOR);
         if (!navActions) return;
 
-        // Check AppStorage first for instant feedback
+        // ALWAYS check AppStorage first - this is the source of truth
         const hasToken = !!AppStorage.get(CONFIG.TOKEN.ACCESS_TOKEN_KEY);
         var user = null;
         var isAuthed = false;
@@ -27,8 +29,9 @@
             user = Auth.getUser();
         }
 
-        // If we have a token, assume logged-in even if user data not yet loaded
-        var loggedIn = isAuthed || hasToken;
+        // If we have a token in storage, ALWAYS show logged-in state
+        // This prevents the nav from flashing "Sign In" during cold starts
+        var loggedIn = hasToken;
 
         if (loggedIn) {
             var displayName = user.displayName || user.username || 'User';
