@@ -172,6 +172,24 @@ def send_friend_request():
     db.session.add(friend_req)
     db.session.commit()
 
+    # Backup to Sanity (survives Vercel cold start)
+    try:
+        sender = User.query.get(current_user_id)
+        if sender:
+            SanityService.save_friend_request_backup({
+                "id": friend_req.id,
+                "sender_id": current_user_id,
+                "receiver_id": receiver_id,
+                "status": "PENDING",
+                "sender_username": sender.username,
+                "sender_display_name": sender.display_name or sender.username,
+                "sender_email": sender.email,
+                "created_at": friend_req.created_at.isoformat(),
+                "updated_at": friend_req.updated_at.isoformat(),
+            })
+    except Exception as e:
+        print(f"[FRIEND] Backup error: {e}")
+
     log_audit_event('FRIEND_REQUEST', 'SUCCESS', current_user_id, details={'receiver_id': receiver_id})
 
     return jsonify(build_success_response(

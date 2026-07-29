@@ -425,3 +425,80 @@ class SanityService:
                 print(f"Failed to update backup: {response.text}")
         except Exception as e:
             print(f"Sanity update error: {e}")
+
+    @staticmethod
+    def save_friend_request_backup(request_data: dict) -> str:
+        """Save friend request backup - dùng project 10 (backup project).
+        Lưu lời mời kết bạn để phòng khi SQLite bị reset (Vercel cold start).
+        """
+        project = _get_backup_project()
+        doc_id = f"friend-req-{uuid.uuid4().hex[:20]}"
+
+        doc = {
+            "_id": doc_id,
+            "_type": "friendRequest",
+            "request_id": request_data.get("id"),
+            "sender_id": request_data.get("sender_id"),
+            "receiver_id": request_data.get("receiver_id"),
+            "status": request_data.get("status", "PENDING"),
+            "sender_username": request_data.get("sender_username", ""),
+            "sender_display_name": request_data.get("sender_display_name", ""),
+            "sender_email": request_data.get("sender_email", ""),
+            "created_at": request_data.get("created_at", datetime.utcnow().isoformat()),
+            "updated_at": request_data.get("updated_at", datetime.utcnow().isoformat()),
+        }
+
+        if not project:
+            return f"local:{doc_id}"
+
+        try:
+            url = f"{SanityService._get_base_url(project)}/mutate"
+            payload = {"mutations": [{"create": doc}]}
+            response = requests.post(url, headers=SanityService._get_headers(project), json=payload, timeout=30)
+            if response.status_code == 200:
+                return doc_id
+            print(f"[Sanity] Friend request backup failed: {response.text}")
+            return f"local:{doc_id}"
+        except Exception as e:
+            print(f"[Sanity] Friend request backup error: {e}")
+            return f"local:{doc_id}"
+
+    @staticmethod
+    def get_friend_requests_backup(receiver_id: str) -> list:
+        """Get pending friend requests from Sanity backup for a receiver.
+        Dùng khi SQLite bị reset (Vercel cold start).
+        """
+        project = _get_backup_project()
+        if not project:
+            return []
+
+        try:
+            url = f"{SanityService._get_base_url(project)}/query"
+            groq = '*[_type == "friendRequest" && receiver_id == $receiverId && status == "PENDING"] | order(created_at desc)'
+            params = {"query": groq, "$receiverId": receiver_id}
+            response = requests.get(url, headers=SanityService._get_headers(project), params=params, timeout=30)
+            if response.status_code == 200:
+                result = response.json()
+                docs = result.get("result", [])
+                # Convert Sanity docs to the format expected by frontend
+                results = []
+                for doc in docs:
+                    results.append({
+                        "id": doc.get("request_id", doc.get("_id", "")),
+                        "sender_id": doc.get("sender_id", ""),
+                        "receiver_id": doc.get("receiver_id", ""),
+                        "status": doc.get("status", "PENDING"),
+                        "created_at": doc.get("created_at", ""),
+                        "updated_at": doc.get("updated_at", ""),
+                        "sender": {
+                            "id": doc.get("sender_id", ""),
+                            "username": doc.get("sender_username", ""),
+                            "display_name": doc.get("sender_display_name", ""),
+                            "email": doc.get("sender_email", ""),
+                        }
+                    })
+                return results
+            return []
+        except Exception as e:
+            print(f"[Sanity] Get friend requests backup error: {e}")
+            return []
