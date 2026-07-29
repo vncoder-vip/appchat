@@ -183,10 +183,25 @@ def send_friend_request():
 @social_bp.route('/friends/accept/<request_id>', methods=['POST'])
 @require_auth
 def accept_friend_request(request_id):
-    """Accept a friend request."""
+    """Accept a friend request.
+    Also supports accepting by sender_id via JSON body (for Vercel cold start compatibility).
+    """
     current_user_id = g.user.get('userId')
 
+    # Try direct lookup by request_id
     friend_req = FriendRequest.query.get(request_id)
+    
+    # Fallback: try finding by sender_id from request body + current_user as receiver
+    if not friend_req:
+        data = request.get_json() or {}
+        sender_id = data.get('sender_id')
+        if sender_id:
+            friend_req = FriendRequest.query.filter_by(
+                sender_id=sender_id,
+                receiver_id=current_user_id,
+                status='PENDING'
+            ).first()
+    
     if not friend_req:
         return jsonify(build_error_response('NOT_FOUND', 'Friend request not found.')), 404
 
