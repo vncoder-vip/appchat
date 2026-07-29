@@ -433,7 +433,9 @@ def get_friends():
 @social_bp.route('/friends/pending', methods=['GET'])
 @require_auth
 def get_pending_requests():
-    """Get all pending friend requests for the current user (received)."""
+    """Get all pending friend requests for the current user (received).
+    Falls back to Sanity backup if SQLite is empty (Vercel cold start).
+    """
     current_user_id = g.user.get('userId')
 
     requests = FriendRequest.query.filter_by(
@@ -448,6 +450,16 @@ def get_pending_requests():
         if sender:
             d['sender'] = sender.to_dict()
         results.append(d)
+    
+    # If SQLite returned empty (Vercel cold start), try Sanity backup
+    if len(results) == 0:
+        try:
+            from services.sanity_service import SanityService
+            backup_data = SanityService.get_friend_requests_backup(current_user_id)
+            if backup_data:
+                results = backup_data
+        except Exception as e:
+            print(f"[PENDING] Sanity fallback error: {e}")
 
     return jsonify(build_success_response(message='Pending requests loaded.', requests=results)), 200
 
