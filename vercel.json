@@ -39,12 +39,8 @@
       "dest": "frontend/css/$1"
     },
     {
-      "src": "/(index.html|login.html|register.html|dashboard.html|social.html|donate.html|docs.html|purchase.html|admin.html|clerk-callback.html)",
+      "src": "/(index.html|login.html|register.html|dashboard.html|social.html|donate.html|docs.html|purchase.html|admin.html)",
       "dest": "frontend/$1"
-    },
-    {
-      "src": "/clerk-callback",
-      "dest": "frontend/clerk-callback.html"
     },
     {
       "src": "/(.*)",
