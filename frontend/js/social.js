@@ -1,10 +1,10 @@
 ﻿/**
  * Social Features - Search, Friends, Chat
- * Requires: config.js, utils.js, api.js, auth.js
+ * Requires: config.js, utils.js, api.js, auth.js, storage.js
  */
 
 // ============================================================
-// SOCKET.IO CONNECTION
+// SOCKET.IO CONNECTION (fallback if CDN not loaded)
 // ============================================================
 let socket = null;
 let socialState = {
@@ -16,107 +16,113 @@ let socialState = {
 function initSocket() {
     if (socket && socket.connected) return;
 
-    const token = AppStorage.getItem(CONFIG.TOKEN.ACCESS_TOKEN_KEY);
+    const token = AppStorage.get(CONFIG.TOKEN.ACCESS_TOKEN_KEY);
     if (!token) return;
 
+    // Check if socket.io library loaded
+    if (typeof io === 'undefined') {
+        console.warn('[Socket] Socket.io not loaded, chat will use REST API only');
+        return;
+    }
+
     const url = CONFIG.SOCKET.URL || CONFIG.API_BASE_URL;
-    socket = io(url, {
-        path: CONFIG.SOCKET.PATH,
-        query: { token },
-        transports: ['websocket', 'polling'],
-        reconnection: true,
-        reconnectionAttempts: Infinity,
-        reconnectionDelay: 1000,
-        reconnectionDelayMax: 5000,
-    });
+    try {
+        socket = io(url, {
+            path: CONFIG.SOCKET.PATH,
+            query: { token },
+            transports: ['websocket', 'polling'],
+            reconnection: true,
+            reconnectionAttempts: Infinity,
+            reconnectionDelay: 1000,
+            reconnectionDelayMax: 5000,
+        });
 
-    socket.on('connect', function() {
-        console.log('[Socket] Connected');
-    });
+        socket.on('connect', function() {
+            console.log('[Socket] Connected');
+        });
 
-    socket.on('disconnect', function() {
-        console.log('[Socket] Disconnected');
-    });
+        socket.on('disconnect', function() {
+            console.log('[Socket] Disconnected');
+        });
 
-    socket.on('connect_error', function(err) {
-        console.error('[Socket] Connection error:', err.message);
-    });
+        socket.on('connect_error', function(err) {
+            console.error('[Socket] Connection error:', err.message);
+        });
 
-    // Online/Offline events
-    socket.on('online_users', function(data) {
-        if (data.online_user_ids) {
-            data.online_user_ids.forEach(function(uid) {
-                socialState.onlineUsers[uid] = true;
-            });
-            updateOnlineStatusUI();
-        }
-    });
-
-    socket.on('user_online', function(data) {
-        if (data.user_id) {
-            socialState.onlineUsers[data.user_id] = true;
-            updateOnlineStatusUI();
-        }
-    });
-
-    socket.on('user_offline', function(data) {
-        if (data.user_id) {
-            delete socialState.onlineUsers[data.user_id];
-            updateOnlineStatusUI();
-        }
-    });
-
-    // Friend request notifications
-    socket.on('notification', function(data) {
-        if (data.type === 'friend_request') {
-            showFriendRequestNotification(data);
-            loadPendingRequests();
-        } else if (data.type === 'friend_accepted') {
-            Utils.showToast(data.accepter.username + ' accepted your friend request!', 'success');
-            loadFriends();
-            loadConversations();
-        } else if (data.type === 'new_message') {
-            // Update conversation list
-            loadConversations();
-            // If currently chatting with this person, add message
-            if (socialState.currentChat && socialState.currentChat.conversation_id === data.conversation_id) {
-                // Message will be added via new_message event
-            } else {
-                // Show notification badge
-                showMessageNotification(data);
+        // Online/Offline events
+        socket.on('online_users', function(data) {
+            if (data.online_user_ids) {
+                data.online_user_ids.forEach(function(uid) {
+                    socialState.onlineUsers[uid] = true;
+                });
+                updateOnlineStatusUI();
             }
-        }
-    });
+        });
 
-    // New message event
-    socket.on('new_message', function(msg) {
-        if (socialState.currentChat && socialState.currentChat.conversation_id === msg.conversation_id) {
-            appendMessage(msg);
-            // Mark as read
-            socket.emit('mark_read', { message_id: msg.id });
-        }
-        loadConversations();
-    });
+        socket.on('user_online', function(data) {
+            if (data.user_id) {
+                socialState.onlineUsers[data.user_id] = true;
+                updateOnlineStatusUI();
+            }
+        });
 
-    // Message sent confirmation - append to chat for sender
-    socket.on('message_sent', function(msg) {
-        if (socialState.currentChat && socialState.currentChat.conversation_id === msg.conversation_id) {
-            appendMessage(msg);
-        }
-        loadConversations();
-    });
+        socket.on('user_offline', function(data) {
+            if (data.user_id) {
+                delete socialState.onlineUsers[data.user_id];
+                updateOnlineStatusUI();
+            }
+        });
 
-    // Typing indicator
-    socket.on('typing_indicator', function(data) {
-        if (socialState.currentChat && socialState.currentChat.conversation_id === data.conversation_id) {
-            showTypingIndicator(data.user_id, data.is_typing);
-        }
-    });
+        // Friend request notifications
+        socket.on('notification', function(data) {
+            if (data.type === 'friend_request') {
+                showFriendRequestNotification(data);
+                loadPendingRequests();
+            } else if (data.type === 'friend_accepted') {
+                Utils.showToast(data.accepter.username + ' accepted your friend request!', 'success');
+                loadFriends();
+                loadConversations();
+            } else if (data.type === 'new_message') {
+                loadConversations();
+                if (socialState.currentChat && socialState.currentChat.conversation_id === data.conversation_id) {
+                    // Message will be added via new_message event
+                } else {
+                    showMessageNotification(data);
+                }
+            }
+        });
 
-    // Message read
-    socket.on('message_read', function(data) {
-        updateMessageReadStatus(data.message_id, data.user_id);
-    });
+        // New message event
+        socket.on('new_message', function(msg) {
+            if (socialState.currentChat && socialState.currentChat.conversation_id === msg.conversation_id) {
+                appendMessage(msg);
+                socket.emit('mark_read', { message_id: msg.id });
+            }
+            loadConversations();
+        });
+
+        // Message sent confirmation
+        socket.on('message_sent', function(msg) {
+            if (socialState.currentChat && socialState.currentChat.conversation_id === msg.conversation_id) {
+                appendMessage(msg);
+            }
+            loadConversations();
+        });
+
+        // Typing indicator
+        socket.on('typing_indicator', function(data) {
+            if (socialState.currentChat && socialState.currentChat.conversation_id === data.conversation_id) {
+                showTypingIndicator(data.user_id, data.is_typing);
+            }
+        });
+
+        // Message read
+        socket.on('message_read', function(data) {
+            updateMessageReadStatus(data.message_id, data.user_id);
+        });
+    } catch (e) {
+        console.error('[Socket] Init error:', e);
+    }
 }
 
 function disconnectSocket() {
@@ -133,7 +139,6 @@ let searchTimeout = null;
 
 function initUserSearch() {
     console.log('[Search] initUserSearch called');
-    // Support both old (user-search-input) and new (msg-search-input) IDs
     var input = document.getElementById('user-search-input') || document.getElementById('msg-search-input');
     if (!input) {
         console.log('[Search] No input found');
@@ -153,7 +158,7 @@ function initUserSearch() {
         }
         searchTimeout = setTimeout(function() {
             searchUsers(q);
-        }, 200); // faster response
+        }, 200);
     });
 }
 
@@ -168,7 +173,6 @@ async function searchUsers(q) {
 }
 
 function renderSearchResults(users) {
-    // Check if we're using new HTML (msg-search-results) or old HTML (search-results)
     var container = document.getElementById('msg-search-results');
     var isNewHtml = !!container;
     
@@ -191,7 +195,6 @@ function renderSearchResults(users) {
     }
 
     if (isNewHtml) {
-        // Zalo-style results
         container.innerHTML = users.map(function(u) {
             var avatarLetter = (u.display_name || u.username || '?')[0].toUpperCase();
             var actionBtn = '';
@@ -215,7 +218,6 @@ function renderSearchResults(users) {
             '</div>';
         }).join('');
     } else {
-        // Old style results
         container.innerHTML = users.map(function(u) {
             var avatarHtml = u.avatar_url
                 ? '<img src="' + Utils.escapeHtml(u.avatar_url) + '" alt="" class="social-avatar-img">'
@@ -251,26 +253,22 @@ function renderSearchResults(users) {
 // ============================================================
 // FRIEND REQUESTS
 // ============================================================
-// Support both: sendFriendRequest(userId) and sendFriendRequest(userId, btn)
 async function sendFriendRequest(receiverId, btn) {
     try {
         var data = await ApiClient.post(CONFIG.SOCIAL.FRIEND_REQUEST, { receiver_id: receiverId });
         if (!data.success) throw data;
         Utils.showToast('Friend request sent!', 'success');
-        // Update button state if provided
         if (btn) {
             btn.disabled = true;
             btn.textContent = 'Đã gửi';
             btn.style.opacity = '0.5';
         }
-        // Notify via socket
         if (socket && socket.connected) {
             socket.emit('friend_request_sent', {
                 receiver_id: receiverId,
                 request_id: data.friend_request ? data.friend_request.id : null
             });
         }
-        // Refresh search
         var input = document.getElementById('user-search-input') || document.getElementById('msg-search-input');
         if (input && input.value.trim()) {
             searchUsers(input.value.trim());
@@ -285,7 +283,6 @@ async function sendFriendRequest(receiverId, btn) {
 }
 
 async function cancelFriendRequest(receiverId) {
-    // Find the request ID first
     try {
         var data = await ApiClient.get(CONFIG.SOCIAL.PENDING_REQUESTS);
         if (!data.success) throw data;
@@ -310,7 +307,6 @@ async function acceptFriendRequest(requestId) {
         var data = await ApiClient.post(CONFIG.SOCIAL.FRIEND_ACCEPT + '/' + requestId, {});
         if (!data.success) throw data;
         Utils.showToast('Friend request accepted!', 'success');
-        // Notify sender via socket
         if (socket && socket.connected) {
             socket.emit('friend_request_accepted', {
                 sender_id: data.friend_request ? data.friend_request.sender_id : null,
@@ -493,7 +489,6 @@ function renderConversations(conversations) {
 // CHAT
 // ============================================================
 async function openChat(friendId) {
-    // Find or create conversation with this friend
     try {
         var data = await ApiClient.get(CONFIG.SOCIAL.CONVERSATIONS);
         if (!data.success) throw data;
@@ -514,18 +509,15 @@ async function openChat(friendId) {
 async function openConversation(conversationId) {
     socialState.currentChat = { conversation_id: conversationId };
 
-    // Sync with inline script variable
     if (typeof currentConversationId !== 'undefined') {
         window.currentConversationId = conversationId;
     }
 
-    // Show chat header + input area
     var chatHeader = document.getElementById('msg-chat-header');
     var inputArea = document.getElementById('msg-input-area');
     if (chatHeader) chatHeader.style.display = 'flex';
     if (inputArea) inputArea.style.display = 'flex';
 
-    // Try to update chat header with partner info from conversations data
     try {
         var convData = await ApiClient.get(CONFIG.SOCIAL.CONVERSATIONS);
         if (convData.success && convData.conversations) {
@@ -557,13 +549,11 @@ async function openConversation(conversationId) {
             }
         }
     } catch (e) {
-        // Silent fail, header shows defaults
+        // Silent fail
     }
 
-    // Load messages
     await loadMessages(conversationId);
 
-    // Focus input
     var input = document.getElementById('msg-chat-input');
     if (input) input.focus();
 }
@@ -578,7 +568,6 @@ async function loadMessages(conversationId) {
     }
 }
 
-// Shared helper: render message content (text/image/file)
 function renderMessageContent(message) {
     if (message.message_type === 'image') {
         return '<img src="' + Utils.escapeHtml(message.content) + '" alt="Image" class="chat-image" onclick="window.open(this.src)" style="max-width:280px;border-radius:8px;cursor:pointer;display:block;">';
@@ -591,7 +580,6 @@ function renderMessageContent(message) {
     return Utils.escapeHtml(message.content);
 }
 
-// Shared helper: render a single message bubble (Zalo/Messenger style)
 function renderMessageBubble(msg, currentUserId) {
     var isMine = msg.sender_id === currentUserId;
     var rowClass = isMine ? 'm-row mine' : 'm-row other';
@@ -621,7 +609,6 @@ function renderMessages(messages) {
         return renderMessageBubble(m, currentUserId);
     }).join('');
 
-    // Auto scroll to bottom
     container.scrollTop = container.scrollHeight;
 }
 
@@ -631,7 +618,6 @@ function appendMessage(msg) {
 
     var currentUserId = Auth._user ? Auth._user.id : null;
 
-    // Remove empty state if present
     var emptyState = container.querySelector('.msg-empty');
     if (emptyState) container.innerHTML = '';
 
@@ -648,7 +634,6 @@ function sendChatMessage() {
     var content = input.value.trim();
     if (!content || !socialState.currentChat) return;
 
-    // Send via socket for realtime
     if (socket && socket.connected) {
         socket.emit('send_message', {
             conversation_id: socialState.currentChat.conversation_id,
@@ -656,14 +641,12 @@ function sendChatMessage() {
             message_type: 'text'
         });
     } else {
-        // Fallback to REST API
         ApiClient.post(CONFIG.SOCIAL.MESSAGES, {
             conversation_id: socialState.currentChat.conversation_id,
             content: content,
             message_type: 'text'
         }).then(function(data) {
             if (data.success) {
-                // Build message object from response (API spreads msg.to_dict() into response)
                 var msg = {
                     id: data.id,
                     conversation_id: data.conversation_id,
@@ -707,7 +690,6 @@ async function uploadChatFile(input) {
         var data = await ApiClient.post(CONFIG.SOCIAL.UPLOAD, formData);
         if (!data.success) throw data;
         
-        // Send the uploaded file URL as a message
         var msgType = data.message_type || 'file';
         var content = data.url;
         
@@ -775,7 +757,6 @@ function updateMessageReadStatus(messageId, userId) {
 }
 
 function updateOnlineStatusUI() {
-    // Update all online/offline indicators in the DOM
     document.querySelectorAll('.social-avatar').forEach(function(el) {
         var parent = el.closest('[data-user-id]');
         if (parent) {
@@ -790,7 +771,6 @@ function updateOnlineStatusUI() {
         }
     });
 
-    // Update status text
     document.querySelectorAll('.friend-status, .search-result-status').forEach(function(el) {
         var parent = el.closest('[data-user-id]');
         if (parent) {

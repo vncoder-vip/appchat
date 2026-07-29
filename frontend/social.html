@@ -1092,10 +1092,10 @@
         }, { passive: true });
 
         // ==========================================
-        // INIT
+        // INIT - with retry for cold start on Vercel
         // ==========================================
         (async function() {
-            var token = AppStorage.getItem(CONFIG.TOKEN.ACCESS_TOKEN_KEY);
+            var token = AppStorage.get(CONFIG.TOKEN.ACCESS_TOKEN_KEY);
             if (!token) {
                 window.location.href = 'login.html';
                 return;
@@ -1103,30 +1103,50 @@
 
             ApiClient.init(token);
 
-            try {
-                var data = await ApiClient.getMe();
-                if (!data.success) throw new Error('Not authenticated');
-
-                var user = data.user;
-                Auth._user = user;
-
-                var displayName = user.displayName || user.username || 'User';
-                var avatarLetter = displayName.charAt(0).toUpperCase();
-                document.getElementById('msg-user-avatar').textContent = avatarLetter;
-
-                initSocialFeatures();
-
-            } catch (err) {
+            // Retry up to 3 times for cold start on Vercel
+            var maxRetries = 3;
+            for (var attempt = 1; attempt <= maxRetries; attempt++) {
                 try {
-                    var refreshData = await ApiClient.post(CONFIG.ENDPOINTS.REFRESH, {}, {});
-                    if (refreshData.success && refreshData.accessToken) {
-                        AppStorage.setItem(CONFIG.TOKEN.ACCESS_TOKEN_KEY, refreshData.accessToken);
-                        window.location.reload();
-                    } else {
-                        window.location.href = 'login.html';
+                    var data = await ApiClient.getMe();
+                    if (data.success) {
+                        var user = data.user;
+                        Auth._user = user;
+
+                        var displayName = user.displayName || user.username || 'User';
+                        var avatarLetter = displayName.charAt(0).toUpperCase();
+                        document.getElementById('msg-user-avatar').textContent = avatarLetter;
+
+                        initSocialFeatures();
+                        return; // Success - exit
                     }
-                } catch (e) {
-                    window.location.href = 'login.html';
+                    throw new Error(data.message || 'Not authenticated');
+                } catch (err) {
+                    if (attempt < maxRetries) {
+                        // Wait before retry (exponential backoff)
+                        await new Promise(function(r) { setTimeout(r, attempt * 1000); });
+                        continue;
+                    }
+                    // Last attempt failed - try refresh
+                    try {
+                        var refreshData = await ApiClient.post(CONFIG.ENDPOINTS.REFRESH, {}, {});
+                        if (refreshData.success && refreshData.accessToken) {
+                            AppStorage.set(CONFIG.TOKEN.ACCESS_TOKEN_KEY, refreshData.accessToken);
+                            window.location.reload();
+                            return;
+                        }
+                    } catch (e) {
+                        // Refresh failed
+                    }
+                    // Only redirect if we're sure there's no token
+                    var finalToken = AppStorage.get(CONFIG.TOKEN.ACCESS_TOKEN_KEY);
+                    if (!finalToken) {
+                        window.location.href = 'login.html';
+                    } else {
+                        // Token exists but server error - show error instead of redirect
+                        console.error('Server error, but token exists. Retrying...');
+                        // Try one more time after a longer delay
+                        setTimeout(function() { window.location.reload(); }, 3000);
+                    }
                 }
             }
         })();
