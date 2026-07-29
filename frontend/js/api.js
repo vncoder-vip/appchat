@@ -38,9 +38,7 @@ const ApiClient = {
      */
     clearAccessToken() {
         this._accessToken = null;
-        if (typeof sessionStorage !== 'undefined') {
-            sessionStorage.removeItem(CONFIG.TOKEN.ACCESS_TOKEN_KEY);
-        }
+        Storage.remove(CONFIG.TOKEN.ACCESS_TOKEN_KEY);
     },
 
     /**
@@ -173,22 +171,16 @@ const ApiClient = {
         .then(data => {
             if (data.success && data.accessToken) {
                 this._accessToken = data.accessToken;
-                if (typeof sessionStorage !== 'undefined') {
-                    sessionStorage.setItem(CONFIG.TOKEN.ACCESS_TOKEN_KEY, data.accessToken);
-                }
+                Storage.set(CONFIG.TOKEN.ACCESS_TOKEN_KEY, data.accessToken);
                 return true;
             }
             this._accessToken = null;
-            if (typeof sessionStorage !== 'undefined') {
-                sessionStorage.removeItem(CONFIG.TOKEN.ACCESS_TOKEN_KEY);
-            }
+            Storage.remove(CONFIG.TOKEN.ACCESS_TOKEN_KEY);
             return false;
         })
         .catch(() => {
             this._accessToken = null;
-            if (typeof sessionStorage !== 'undefined') {
-                sessionStorage.removeItem(CONFIG.TOKEN.ACCESS_TOKEN_KEY);
-            }
+            Storage.remove(CONFIG.TOKEN.ACCESS_TOKEN_KEY);
             return false;
         })
         .finally(() => {

@@ -38,6 +38,7 @@ const CONFIG = {
     TOKEN: {
         ACCESS_TOKEN_KEY: 'authguard_access_token',
         REFRESH_TOKEN_KEY: 'authguard_refresh_token',
+        STORAGE: 'localStorage', // 'localStorage' for persistent, 'sessionStorage' for tab-only
     },
 
     ENDPOINTS: {

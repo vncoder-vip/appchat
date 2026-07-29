@@ -2,6 +2,7 @@
  * Authentication State Management.
  * 
  * Manages login/logout state, token lifecycle, and user info.
+ * Uses localStorage for persistent session (survives browser restart).
  */
 const Auth = {
     _user: null,
@@ -9,9 +10,10 @@ const Auth = {
 
     /**
      * Initialize auth from stored session.
+     * Auto-refreshes expired tokens.
      */
     async init() {
-        const token = sessionStorage.getItem(CONFIG.TOKEN.ACCESS_TOKEN_KEY);
+        const token = Storage.get(CONFIG.TOKEN.ACCESS_TOKEN_KEY);
         if (token) {
             ApiClient.init(token);
             try {
@@ -23,6 +25,21 @@ const Auth = {
                 }
             } catch (err) {
                 // Token expired, try refresh
+                try {
+                    const refreshed = await ApiClient._tryRefresh();
+                    if (refreshed) {
+                        // Retry with new token
+                        const data = await ApiClient.getMe();
+                        if (data.success) {
+                            this._user = data.user;
+                            this._notify();
+                            return true;
+                        }
+                    }
+                } catch (e) {
+                    // Refresh failed, clear storage
+                    Storage.clearAuth();
+                }
             }
         }
         return false;
@@ -42,7 +59,7 @@ const Auth = {
         const data = await ApiClient.login(usernameOrEmail, password);
         if (data.success) {
             ApiClient.setAccessToken(data.accessToken);
-            sessionStorage.setItem(CONFIG.TOKEN.ACCESS_TOKEN_KEY, data.accessToken);
+            Storage.set(CONFIG.TOKEN.ACCESS_TOKEN_KEY, data.accessToken);
             this._user = data.user;
             this._notify();
         }
@@ -56,7 +73,7 @@ const Auth = {
         const data = await ApiClient.register(username, email, password);
         if (data.success) {
             ApiClient.setAccessToken(data.accessToken);
-            sessionStorage.setItem(CONFIG.TOKEN.ACCESS_TOKEN_KEY, data.accessToken);
+            Storage.set(CONFIG.TOKEN.ACCESS_TOKEN_KEY, data.accessToken);
             this._user = data.user;
             this._notify();
         }
@@ -92,7 +109,7 @@ const Auth = {
      */
     _cleanup() {
         ApiClient.clearAccessToken();
-        sessionStorage.removeItem(CONFIG.TOKEN.ACCESS_TOKEN_KEY);
+        Storage.clearAuth();
         this._user = null;
         this._notify();
         window.location.href = 'login.html';
