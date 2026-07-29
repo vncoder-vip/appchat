@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - Chủ Tịch Chuột</title>
+    <title>Admin Panel - Chá»§ Tá»‹ch Chuá»™t</title>
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/dashboard.css">
@@ -37,7 +37,7 @@
         <div class="sidebar-header">
             <a href="index.html" class="sidebar-logo">
                 <img src="css/img/authss.png" alt="AuthGuard" class="logo-img-sm">
-                <span>Chủ Tịch CHuột Admin</span>
+                <span>Chá»§ Tá»‹ch CHuá»™t Admin</span>
             </a>
         </div>
         <nav class="sidebar-nav">
@@ -178,7 +178,7 @@
                         </div>
                         <div class="meta">
                             <span>Package: <strong>${req.package}</strong></span>
-                            <span>Amount: <strong>${req.amount?.toLocaleString()}₫</strong></span>
+                            <span>Amount: <strong>${req.amount?.toLocaleString()}â‚«</strong></span>
                             <span>Date: <strong>${Utils.formatDate(req.created_at)}</strong></span>
                         </div>
                         ${req.payment_proof_url ? `
@@ -188,11 +188,11 @@
                         <div class="actions">
                             <button class="btn btn-primary btn-sm" onclick="approveRequest('${req.user_id}', '${req.package}')">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                                Phê duyệt
+                                PhÃª duyá»‡t
                             </button>
                             <button class="btn btn-danger btn-sm" onclick="rejectRequest('${req.user_id}')">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                                Từ chối
+                                Tá»« chá»‘i
                             </button>
                         </div>
                     </div>
@@ -203,7 +203,7 @@
         }
 
         async function approveRequest(userId, pkg) {
-            if (!confirm(`Phê duyệt gói ${pkg} cho user này?`)) return;
+            if (!confirm(`PhÃª duyá»‡t gÃ³i ${pkg} cho user nÃ y?`)) return;
             try {
                 const data = await ApiClient.post(CONFIG.ADMIN.APPROVE + '/' + userId, { package: pkg });
                 if (data.success) {
@@ -219,7 +219,7 @@
         }
 
         async function rejectRequest(userId) {
-            if (!confirm('Từ chối yêu cầu này?')) return;
+            if (!confirm('Tá»« chá»‘i yÃªu cáº§u nÃ y?')) return;
             try {
                 const data = await ApiClient.post(CONFIG.ADMIN.REJECT + '/' + userId, {});
                 if (data.success) {
@@ -259,9 +259,9 @@
 
         async function handleLogout() { await Auth.logout(); }
 
-        // ===== MAIN INIT: Gọi thẳng API /me, bypass Auth object cache =====
+        // ===== MAIN INIT: Gá»i tháº³ng API /me, bypass Auth object cache =====
         (async function() {
-            const token = sessionStorage.getItem(CONFIG.TOKEN.ACCESS_TOKEN_KEY);
+            const token = AppStorage.get(CONFIG.TOKEN.ACCESS_TOKEN_KEY);
             if (!token) { window.location.href = 'login.html'; return; }
 
             ApiClient.init(token);
@@ -271,9 +271,9 @@
                 if (!data.success) throw new Error('Not authenticated');
 
                 const user = data.user;
-                Auth._user = user; // Lưu cho các hàm khác
+                Auth._user = user; // LÆ°u cho cÃ¡c hÃ m khÃ¡c
 
-                // Kiểm tra admin
+                // Kiá»ƒm tra admin
                 if (!user || user.role !== 'admin') {
                     window.location.href = 'dashboard.html';
                     return;
@@ -287,11 +287,11 @@
                 loadPending();
                 loadUsers();
             } catch (err) {
-                // Token expired - thử refresh
+                // Token expired - thá»­ refresh
                 try {
                     const refreshData = await ApiClient.post(CONFIG.ENDPOINTS.REFRESH, {}, {});
                     if (refreshData.success && refreshData.accessToken) {
-                        sessionStorage.setItem(CONFIG.TOKEN.ACCESS_TOKEN_KEY, refreshData.accessToken);
+                        AppStorage.set(CONFIG.TOKEN.ACCESS_TOKEN_KEY, refreshData.accessToken);
                         window.location.reload();
                     } else {
                         window.location.href = 'login.html';

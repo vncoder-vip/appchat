@@ -154,7 +154,7 @@
                 const data = await ApiClient.post('/api/auth/google', { accessToken: accessToken });
                 if (data.success) {
                     ApiClient.setAccessToken(data.accessToken);
-                    Storage.set(CONFIG.TOKEN.ACCESS_TOKEN_KEY, data.accessToken);
+                    AppStorage.set(CONFIG.TOKEN.ACCESS_TOKEN_KEY, data.accessToken);
                     Auth._user = data.user;
                     Auth._notify();
                     showMsg('Login successful! Redirecting...', 'success');
