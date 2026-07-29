@@ -19,18 +19,6 @@
       "dest": "app.py"
     },
     {
-      "src": "/socket.io/(.*)",
-      "dest": "app.py"
-    },
-    {
-      "src": "/uploads/(.*)",
-      "dest": "app.py"
-    },
-    {
-      "src": "/google[a-z0-9]+\\.html",
-      "dest": "frontend/google1a1fdf205adae20c.html"
-    },
-    {
       "src": "/js/(.*)",
       "dest": "frontend/js/$1"
     },
