@@ -4,10 +4,11 @@
  * Uses localStorage for persistent login (survives browser close/restart).
  * Falls back to sessionStorage if localStorage is unavailable.
  * 
- * Add this script BEFORE auth.js and api.js in HTML files.
+ * NOTE: Uses 'AppStorage' instead of 'Storage' to avoid conflict with
+ * the browser's built-in window.Storage interface.
  */
 
-const Storage = {
+const AppStorage = {
     /**
      * Get the storage type based on config.
      */
