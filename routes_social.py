@@ -117,7 +117,6 @@ def _get_friend_status(current_user_id, other_user_id):
 # ============================================================
 @social_bp.route('/friends/request', methods=['POST'])
 @require_auth
-@require_friend_limit
 @rate_limit('default')
 def send_friend_request():
     """Send a friend request to another user."""
