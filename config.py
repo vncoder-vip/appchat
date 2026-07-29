@@ -12,7 +12,7 @@ class Config:
     _raw_db = os.getenv("DATABASE_URL", "").strip()
     if _raw_db:
         if _raw_db.startswith("sqlite:///"):
-            if os.environ.get('VERCEL'):
+            if os.environ.get('VERCEL') or os.environ.get('VERCEL_ENV'):
                 import tempfile
                 tmp = tempfile.gettempdir().replace('\\', '/')
                 SQLALCHEMY_DATABASE_URI = f"sqlite:///{tmp}/app.db"
@@ -21,7 +21,12 @@ class Config:
         else:
             SQLALCHEMY_DATABASE_URI = _raw_db
     else:
-        SQLALCHEMY_DATABASE_URI = "sqlite:///dev.db"
+        if os.environ.get('VERCEL') or os.environ.get('VERCEL_ENV'):
+            import tempfile
+            tmp = tempfile.gettempdir().replace('\\', '/')
+            SQLALCHEMY_DATABASE_URI = f"sqlite:///{tmp}/app.db"
+        else:
+            SQLALCHEMY_DATABASE_URI = "sqlite:///dev.db"
     
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     MAX_CONTENT_LENGTH = 20 * 1024 * 1024

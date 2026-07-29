@@ -6,7 +6,14 @@ from config import Config
 from models import db
 from middleware import add_cors_headers
 
-app = Flask(__name__)
+# Use temp directory for instance path on Vercel (read-only filesystem)
+if os.environ.get('VERCEL') or os.environ.get('VERCEL_ENV'):
+    import tempfile
+    instance_path = tempfile.gettempdir()
+else:
+    instance_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'instance')
+
+app = Flask(__name__, instance_path=instance_path, instance_relative_config=False)
 app.config.from_object(Config)
 db.init_app(app)
 
