@@ -232,7 +232,7 @@
             function initStartChatBtn() {
                 var btn = document.getElementById('start-chat-btn');
                 if (!btn) return;
-                var token = sessionStorage.getItem('authguard_access_token');
+                var token = AppStorage.get(CONFIG.TOKEN.ACCESS_TOKEN_KEY);
                 if (token) {
                     // Check if really authenticated
                     if (typeof Auth !== 'undefined' && Auth.isAuthenticated && Auth.isAuthenticated()) {

@@ -1,13 +1,12 @@
 /**
  * Navigation Auth State Manager.
  * Dynamically updates nav-actions based on authentication state.
- * Checks sessionStorage first for instant feedback, then updates after Auth.init().
+ * Uses AppStorage (localStorage) for persistent session check.
  */
 (function() {
     'use strict';
 
     const NAV_ACTIONS_SELECTOR = '.nav-actions';
-    const TOKEN_KEY = 'authguard_access_token';
 
     /**
      * Render nav actions based on auth state.
@@ -16,8 +15,8 @@
         const navActions = document.querySelector(NAV_ACTIONS_SELECTOR);
         if (!navActions) return;
 
-        // Check sessionStorage first for instant feedback
-        const hasToken = !!sessionStorage.getItem(TOKEN_KEY);
+        // Check AppStorage first for instant feedback
+        const hasToken = !!AppStorage.get(CONFIG.TOKEN.ACCESS_TOKEN_KEY);
         var user = null;
         var isAuthed = false;
 
@@ -28,9 +27,10 @@
             user = Auth.getUser();
         }
 
-        var loggedIn = isAuthed || (hasToken && user);
+        // If we have a token, assume logged-in even if user data not yet loaded
+        var loggedIn = isAuthed || hasToken;
 
-        if (loggedIn && user) {
+        if (loggedIn) {
             var displayName = user.displayName || user.username || 'User';
             var avatarLetter = displayName.charAt(0).toUpperCase();
 
@@ -78,12 +78,12 @@
                 await Auth.logout();
             } else {
                 // Fallback if Auth module not available
-                sessionStorage.removeItem(TOKEN_KEY);
+                AppStorage.remove(CONFIG.TOKEN.ACCESS_TOKEN_KEY);
                 window.location.href = 'login.html';
             }
         } catch (err) {
             console.error('Logout failed:', err);
-            sessionStorage.removeItem(TOKEN_KEY);
+            AppStorage.remove(CONFIG.TOKEN.ACCESS_TOKEN_KEY);
             window.location.href = 'login.html';
         }
     };
@@ -92,7 +92,7 @@
      * Initialize — try to load auth state and render nav.
      */
     function init() {
-        // Immediate render based on sessionStorage (fast check)
+        // Immediate render based on AppStorage (fast check)
         renderNavActions();
 
         // Wait for Auth module to be loaded
