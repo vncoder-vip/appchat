@@ -6,6 +6,9 @@
  * 
  * NOTE: Uses 'AppStorage' instead of 'Storage' to avoid conflict with
  * the browser's built-in window.Storage interface.
+ * 
+ * Provides both short methods (get/set/remove) and full methods (getItem/setItem/removeItem)
+ * for compatibility with code that may call either style.
  */
 
 const AppStorage = {
@@ -40,6 +43,13 @@ const AppStorage = {
     },
 
     /**
+     * Alias for get() - compatibility with sessionStorage API style.
+     */
+    getItem(key) {
+        return this.get(key);
+    },
+
+    /**
      * Set an item in storage.
      */
     set(key, value) {
@@ -51,6 +61,13 @@ const AppStorage = {
     },
 
     /**
+     * Alias for set() - compatibility with sessionStorage API style.
+     */
+    setItem(key, value) {
+        this.set(key, value);
+    },
+
+    /**
      * Remove an item from storage.
      */
     remove(key) {
@@ -59,6 +76,13 @@ const AppStorage = {
         } catch (e) {
             // Ignore
         }
+    },
+
+    /**
+     * Alias for remove() - compatibility with sessionStorage API style.
+     */
+    removeItem(key) {
+        this.remove(key);
     },
 
     /**
