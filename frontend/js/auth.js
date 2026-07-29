@@ -11,11 +11,17 @@ const Auth = {
     /**
      * Initialize auth from stored session.
      * Auto-refreshes expired tokens.
+     * Does NOT clear token on transient errors (e.g. Vercel cold start).
      */
     async init() {
         const token = AppStorage.get(CONFIG.TOKEN.ACCESS_TOKEN_KEY);
-        if (token) {
-            ApiClient.init(token);
+        if (!token) return false;
+
+        ApiClient.init(token);
+
+        // Retry up to 3 times for cold start on Vercel
+        var maxRetries = 3;
+        for (var attempt = 1; attempt <= maxRetries; attempt++) {
             try {
                 const data = await ApiClient.getMe();
                 if (data.success) {
@@ -23,23 +29,51 @@ const Auth = {
                     this._notify();
                     return true;
                 }
-            } catch (err) {
-                // Token expired, try refresh
-                try {
-                    const refreshed = await ApiClient._tryRefresh();
-                    if (refreshed) {
-                        // Retry with new token
-                        const data = await ApiClient.getMe();
-                        if (data.success) {
-                            this._user = data.user;
-                            this._notify();
-                            return true;
+                // API returned success=false, token might be invalid
+                if (attempt >= maxRetries) {
+                    // Try refresh before giving up
+                    try {
+                        const refreshed = await ApiClient._tryRefresh();
+                        if (refreshed) {
+                            const data2 = await ApiClient.getMe();
+                            if (data2.success) {
+                                this._user = data2.user;
+                                this._notify();
+                                return true;
+                            }
                         }
+                    } catch (e) {
+                        // Refresh failed
                     }
-                } catch (e) {
-                    // Refresh failed, clear storage
-                    AppStorage.clearAuth();
+                    // Only clear token if we're sure it's invalid
+                    // Check if we got a 401 response
+                    if (data.code === 'TOKEN_EXPIRED_OR_INVALID' || data.code === 'UNAUTHORIZED') {
+                        AppStorage.clearAuth();
+                    }
+                    return false;
                 }
+            } catch (err) {
+                // Network error or server error (cold start) - retry
+                if (attempt >= maxRetries) {
+                    // Last attempt - try refresh
+                    try {
+                        const refreshed = await ApiClient._tryRefresh();
+                        if (refreshed) {
+                            const data2 = await ApiClient.getMe();
+                            if (data2.success) {
+                                this._user = data2.user;
+                                this._notify();
+                                return true;
+                            }
+                        }
+                    } catch (e) {
+                        // Refresh failed
+                    }
+                    // Don't clear token on network/server errors - token is still valid
+                    return false;
+                }
+                // Wait before retry (exponential backoff)
+                await new Promise(function(r) { setTimeout(r, attempt * 1000); });
             }
         }
         return false;
