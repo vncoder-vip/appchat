@@ -11,11 +11,12 @@ build/
 venv/
 env/
 .next/
+
 # Database
 instance/
 *.db
 
-# Environment block
+# Environment
 .env
 
 # IDE
@@ -28,3 +29,21 @@ instance/
 .DS_Store
 Thumbs.db
 node_modules/
+
+# Test cache
+.pytest_cache/
+
+# Windsurf skills
+.windsurf/
+
+# Uploads
+frontend/uploads/
+
+# QR code
+QR code/
+frontend/QR code/
+frontend/qrcode/
+
+# Logs
+*.log
+app_output.log
