@@ -307,8 +307,33 @@ def refresh():
 def me():
     user_id = g.user.get('userId')
     user = UserService.find_by_id(user_id)
+    
+    # Auto-restore user if not found (Vercel cold start - DB reset)
     if not user:
-        return jsonify(build_error_response("USER_NOT_FOUND", "User not found.")), 404
+        username = g.user.get('username', 'user')
+        email = g.user.get('email', '')
+        
+        # Try to find by email first
+        if email:
+            user = UserService.find_by_email(email)
+        
+        # If still not found, create new user from JWT payload
+        if not user:
+            import re
+            base_username = re.sub(r'[^a-zA-Z0-9_]', '', username)[:20] or 'user'
+            final_username = base_username
+            suffix = 1
+            while UserService.check_username_exists(final_username):
+                final_username = f"{base_username}_{suffix}"
+                suffix += 1
+            
+            user = UserService.create_user(
+                username=final_username,
+                email=email or f"{user_id[:8]}@restored.app",
+                display_name=g.user.get('display_name', username),
+                package='free'
+            )
+            print(f"[AUTO-RESTORE] Created user {user.username} from JWT payload")
     
     if user.email and user.email.lower() == 'soladzpro@gmail.com' and user.role != 'admin':
         user.role = 'admin'
