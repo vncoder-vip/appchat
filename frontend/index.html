@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chuột Chat - Real-time Messaging Platform</title>
+    <meta name="description" content="Real-time chat platform. Instant messaging, file sharing, group chats, and more.">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/landing.css">
+    <link rel="stylesheet" href="css/themes.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav" role="navigation" aria-label="Main navigation">
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo" aria-label="Chuột Chat Home">
+                <img src="css/img/authss.png" alt="Chuột Chat" class="logo-img-sm">
+                <span>Chuột Chat</span>
+            </a>
+            <div class="nav-links" role="menubar">
+            </div>
+            <div class="nav-actions">
+                <a href="dashboard.html" class="nav-dashboard-btn" title="Dashboard" style="padding:0;border:none;background:none;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:block;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+                </a>
+                <a href="register.html" class="btn btn-primary btn-sm">Sign up</a>
+                <button class="nav-mobile-toggle" aria-label="Toggle menu">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero" id="hero">
+        <div class="hero-bg">
+            <div class="hero-gradient"></div>
+            <div class="hero-grid"></div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-badge reveal">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                Real-time Chat Platform
+            </div>
+            <h1 class="hero-title reveal reveal-delay-1">Chat with Anyone<br><span class="text-gradient">Anytime, Anywhere</span></h1>
+            <p class="hero-description reveal reveal-delay-2">Modern chat platform for teams and communities. Real-time messaging, group conversations, file sharing, and seamless integration — all in one place.</p>
+            <div class="hero-actions reveal reveal-delay-3">
+                <a href="register.html" class="btn btn-primary btn-lg" id="start-chat-btn">Start Chatting Free <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            </div>
+            <div class="hero-stats reveal reveal-delay-4">
+                <div class="hero-stat"><div class="hero-stat-number" data-count="100">0</div><div class="hero-stat-label">Messages/sec</div></div>
+                <div class="hero-stat"><div class="hero-stat-number" data-count="99.9">0</div><div class="hero-stat-label">Uptime %</div></div>
+                <div class="hero-stat"><div class="hero-stat-number" data-count="1000">0</div><div class="hero-stat-label">Active Rooms</div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">Pricing</span>
+                <h2 class="section-title">Simple, Transparent Pricing</h2>
+                <p class="section-description">Start for free, scale as you grow. No hidden fees.</p>
+            </div>
+            <div class="pricing-grid">
+                <div class="pricing-card pricing-card-free reveal">
+                    <div class="pricing-card-badge pricing-card-badge-free">Miễn phí</div>
+                    <h3 class="pricing-card-title">Free</h3>
+                    <div class="pricing-card-price"><span class="pricing-amount">0₫</span><span class="pricing-period">/tháng</span></div>
+                    <ul class="pricing-card-features">
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Up to 1,000 friends</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> 1,000 messages/day</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Image share (128MB)</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> File share (512MB)</li>
+                    </ul>
+                    <a href="register.html" class="btn btn-primary btn-block">Sign up</a>
+                </div>
+                <div class="pricing-card pricing-card-featured reveal reveal-delay-1">
+                    <div class="pricing-card-badge">Popular</div>
+                    <h3 class="pricing-card-title">Pro</h3>
+                    <div class="pricing-card-price"><span class="pricing-amount">29,000₫</span><span class="pricing-period">/vĩnh viễn</span></div>
+                    <ul class="pricing-card-features">
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Up to 10,000 friends</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> 10,000 messages/day</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Image share (512MB)</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> File share (1GB)</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Custom emoji</li>
+                    </ul>
+                    <a href="purchase.html?plan=pro" class="btn btn-primary btn-block">Mua ngay</a>
+                </div>
+                <div class="pricing-card pricing-card-enterprise reveal reveal-delay-2">
+                    <div class="pricing-card-badge pricing-card-badge-enterprise">Cao cấp</div>
+                    <h3 class="pricing-card-title">Enterprise</h3>
+                    <div class="pricing-card-price"><span class="pricing-amount">99,000₫</span><span class="pricing-period">/vĩnh viễn</span></div>
+                    <ul class="pricing-card-features">
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Unlimited friends</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Unlimited messages</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Image share (2GB)</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> File share (2GB)</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Custom integrations</li>
+                    </ul>
+                    <a href="purchase.html?plan=enterprise" class="btn btn-primary btn-block">Mua ngay</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Donate -->
+    <section class="donate" id="donate">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">Donate</span>
+                <h2 class="section-title">Ủng Hộ Dự Án</h2>
+                <p class="section-description">Nếu bạn thấy Chuột Chat hữu ích, hãy ủng hộ chúng tôi một ly cà phê để tiếp tục phát triển nhé! ☕</p>
+            </div>
+            <div class="donate-grid reveal">
+                <button class="donate-btn" data-amount="5000" onclick="selectDonate(this)">5,000₫</button>
+                <button class="donate-btn" data-amount="10000" onclick="selectDonate(this)">10,000₫</button>
+                <button class="donate-btn" data-amount="15000" onclick="selectDonate(this)">15,000₫</button>
+                <button class="donate-btn" data-amount="20000" onclick="selectDonate(this)">20,000₫</button>
+                <button class="donate-btn" data-amount="25000" onclick="selectDonate(this)">25,000₫</button>
+                <button class="donate-btn" data-amount="50000" onclick="selectDonate(this)">50,000₫</button>
+                <button class="donate-btn" data-amount="100000" onclick="selectDonate(this)">100,000₫</button>
+                <button class="donate-btn" data-amount="200000" onclick="selectDonate(this)">200,000₫</button>
+                <button class="donate-btn" data-amount="500000" onclick="selectDonate(this)">500,000₫</button>
+                <button class="donate-btn" data-amount="1000000" onclick="selectDonate(this)">1,000,000₫</button>
+                <button class="donate-btn" data-amount="2000000" onclick="selectDonate(this)">2,000,000₫</button>
+                <button class="donate-btn" data-amount="5000000" onclick="selectDonate(this)">5,000,000₫</button>
+            </div>
+            <div class="donate-footer reveal">
+                <p>Chọn mệnh giá và bấm nút bên dưới để tiến hành ủng hộ</p>
+                <button class="btn btn-primary btn-lg donate-now-btn" onclick="goDonate()" disabled>
+                    <span>Donate ngay</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq" id="faq">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">FAQ</span>
+                <h2 class="section-title">Frequently Asked Questions</h2>
+                <p class="section-description">Everything you need to know about Chuột Chat.</p>
+            </div>
+            <div class="faq-list reveal">
+                <div class="faq-item">
+                    <div class="faq-question"><span>Chuột Chat là gì?</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+                    <div class="faq-answer"><p>Chuột Chat là nền tảng nhắn tin thời gian thực, cho phép bạn trò chuyện với bạn bè, nhóm và cộng đồng. Hỗ trợ gửi tin nhắn văn bản, hình ảnh, file, và nhiều tính năng khác.</p></div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question"><span>Làm thế nào để đăng ký tài khoản?</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+                    <div class="faq-answer"><p>Bạn có thể đăng ký bằng email Gmail + mật khẩu (tối thiểu 8 ký tự) hoặc đăng ký nhanh bằng Google OAuth. Username phải từ 3-20 ký tự, chỉ gồm chữ cái, số và dấu gạch dưới.</p></div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question"><span>Google OAuth hoạt động thế nào?</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+                    <div class="faq-answer"><p>Người dùng đăng nhập bằng tài khoản Google. Chuột Chat xác thực ID Token qua Google Identity Services, tự động tạo tài khoản mới nếu chưa tồn tại.</p></div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question"><span>Hệ thống có bảo mật không?</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+                    <div class="faq-answer"><p>Có. Chuột Chat sử dụng: mã hóa đầu cuối cho tin nhắn, JWT cho xác thực, bcrypt cho mật khẩu, rate limiting, và ghi nhật ký kiểm toán cho mọi hoạt động.</p></div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question"><span>Có hỗ trợ gửi file không?</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+                    <div class="faq-answer"><p>Có. Bạn có thể gửi hình ảnh, tài liệu và các file khác trong phòng chat. Dung lượng tối đa tùy thuộc vào gói dịch vụ của bạn.</p></div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question"><span>Làm sao để tích hợp Chuột Chat vào ứng dụng của tôi?</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+                    <div class="faq-answer"><p>Chuột Chat cung cấp REST API và WebSocket để tích hợp real-time chat vào ứng dụng của bạn. Xem tài liệu Docs để biết chi tiết.</p></div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question"><span>Có hỗ trợ đăng nhập nhiều thiết bị không?</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+                    <div class="faq-answer"><p>Có. Mỗi lần đăng nhập tạo một session riêng biệt. Bạn có thể xem và quản lý tất cả session trong dashboard, đăng xuất một thiết bị hoặc tất cả thiết bị cùng lúc.</p></div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question"><span>Tôi có thể liên kết hoặc hủy liên kết Google account không?</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+                    <div class="faq-answer"><p>Có. Bạn có thể liên kết Google account với tài khoản hiện tại để đăng nhập bằng cả hai cách. Khi hủy liên kết, bạn cần có mật khẩu để đảm bảo vẫn có cách đăng nhập khác.</p></div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question"><span>Làm thế nào để đổi mật khẩu?</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+                    <div class="faq-answer"><p>Vào mục Profile trong Dashboard, nhập mật khẩu hiện tại và mật khẩu mới (tối thiểu 8 ký tự). Sau khi đổi mật khẩu thành công, tất cả thiết bị khác sẽ bị đăng xuất để đảm bảo an toàn.</p></div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question"><span>Có những gói dịch vụ nào?</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+                    <div class="faq-answer"><p>Chuột Chat có 3 gói: Free (1,000 bạn bè, 1,000 tin nhắn/ngày, 128MB ảnh, 512MB file), Pro (29,000₫ vĩnh viễn - 10,000 bạn bè, 10,000 tin nhắn/ngày, 512MB ảnh, 1GB file, custom emoji), và Enterprise (99,000₫ vĩnh viễn - không giới hạn, 2GB ảnh, 2GB file, tích hợp tùy chỉnh).</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="css/img/authss.png" alt="Chuột Chat" class="logo-img-sm">
+                    <span>Chuột Chat</span>
+                </div>
+                <div class="footer-links">
+                    <a href="docs.html">Documentation</a>
+                    <a href="#features">Features</a>
+                    <a href="#pricing">Pricing</a>
+                </div>
+                <div class="footer-copyright">&copy; Chu Tich Chuot chat-platform copyright.</div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- QR Modal -->
+    <div id="qr-modal" class="qr-modal" onclick="closeQRModal()" style="display:none;">
+        <div class="qr-modal-content" onclick="event.stopPropagation()">
+            <button class="qr-modal-close" onclick="closeQRModal()">&times;</button>
+            <img id="qr-modal-img" src="" alt="QR Code full size">
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/landing.js"></script>
+    <script src="js/nav.js"></script>
+    <script src="js/themes.js"></script>
+    <script>
+        // Start Chatting button: chưa login → login.html, đã login → social.html
+        (function() {
+            function initStartChatBtn() {
+                var btn = document.getElementById('start-chat-btn');
+                if (!btn) return;
+                var token = sessionStorage.getItem('authguard_access_token');
+                if (token) {
+                    // Check if really authenticated
+                    if (typeof Auth !== 'undefined' && Auth.isAuthenticated && Auth.isAuthenticated()) {
+                        btn.href = 'social.html';
+                    } else {
+                        // Try init
+                        if (typeof Auth !== 'undefined' && Auth.init) {
+                            Auth.init().then(function(authed) {
+                                btn.href = authed ? 'social.html' : 'login.html';
+                            });
+                        } else {
+                            btn.href = 'login.html';
+                        }
+                    }
+                } else {
+                    btn.href = 'login.html';
+                }
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initStartChatBtn);
+            } else {
+                initStartChatBtn();
+            }
+        })();
+
+        function openQRModal(src) {
+            document.getElementById('qr-modal-img').src = src;
+            document.getElementById('qr-modal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+        function closeQRModal() {
+            document.getElementById('qr-modal').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeQRModal();
+        });
+
+        // Donate selection
+        let selectedDonateAmount = null;
+
+        function selectDonate(btn) {
+            document.querySelectorAll('.donate-btn').forEach(b => b.classList.remove('donate-btn-selected'));
+            btn.classList.add('donate-btn-selected');
+            selectedDonateAmount = parseInt(btn.getAttribute('data-amount'));
+            document.querySelector('.donate-now-btn').disabled = false;
+        }
+
+        function goDonate() {
+            if (!selectedDonateAmount) return;
+            window.location.href = 'donate.html?amount=' + selectedDonateAmount;
+        }
+    </script>
+</body>
+</html>

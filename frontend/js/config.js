@@ -1,0 +1,107 @@
+/**
+ * Authentication Service - Frontend Configuration
+ * 
+ * Chỉ cần thay đổi API_BASE_URL là có thể kết nối với Backend thật.
+ * Override bằng window.__API_BASE_URL trước khi script load.
+ */
+
+const resolveDefaultApiBaseUrl = () => {
+    if (window.__API_BASE_URL) {
+        return window.__API_BASE_URL;
+    }
+
+    if (!window.location) {
+        return '';
+    }
+
+    const { protocol, hostname, port } = window.location;
+    const currentOrigin = `${protocol}//${hostname}${port ? `:${port}` : ''}`;
+
+    if (!port || port === '5000') {
+        return currentOrigin;
+    }
+
+    // Local development fallback when the frontend is served from a different port
+    // but the Flask backend is still running on port 5000.
+    if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0') {
+        return `${protocol}//${hostname}:5000`;
+    }
+
+    return currentOrigin;
+};
+
+const DEFAULT_API_BASE_URL = resolveDefaultApiBaseUrl();
+
+const CONFIG = {
+    API_BASE_URL: DEFAULT_API_BASE_URL,
+
+    TOKEN: {
+        ACCESS_TOKEN_KEY: 'authguard_access_token',
+        REFRESH_TOKEN_KEY: 'authguard_refresh_token',
+    },
+
+    ENDPOINTS: {
+        REGISTER: '/api/auth/register',
+        LOGIN: '/api/auth/login',
+        LOGOUT: '/api/auth/logout',
+        LOGOUT_ALL: '/api/auth/logout-all',
+        REFRESH: '/api/auth/refresh',
+        ME: '/api/auth/me',
+        VERIFY: '/api/auth/verify',
+        CHECK_USERNAME: '/api/auth/check-username',
+        CHECK_EMAIL: '/api/auth/check-email',
+        UPDATE_PROFILE: '/api/auth/me',
+        CHANGE_PASSWORD: '/api/auth/change-password',
+        SESSIONS: '/api/auth/me',
+        PROVIDERS: '/api/auth/me',
+        KEYS: '/api/keys',
+        WEBSITES: '/api/websites',
+        PACKAGE_USAGE: '/api/package/usage',
+        ADMIN_PACKAGE_USAGE: '/api/admin/package-usage',
+        THEME: '/api/auth/theme',
+    },
+
+    APP: {
+        NAME: 'Chuột Chat',
+        TAGLINE: 'Real-time Messaging Platform',
+    },
+
+    CLERK: {
+        PUBLISHABLE_KEY: window.__CLERK_PUBLISHABLE_KEY || 'pk_test_cXVpY2stZHJ1bS00NC5jbGVyay5hY2NvdW50cy5kZXYk',
+        CONFIG: '/api/auth/config',
+    },
+
+    PAYMENT: {
+        REQUEST: '/api/purchase/request',
+        REQUESTS: '/api/purchase/requests',
+        PACKAGE: '/api/purchase/package',
+        REUPLOAD: '/api/purchase/request',
+    },
+
+    ADMIN: {
+        USERS: '/api/admin/users',
+        PENDING_REQUESTS: '/api/admin/pending-requests',
+        APPROVE: '/api/admin/approve',
+        REJECT: '/api/admin/reject',
+    },
+
+    SOCIAL: {
+        SEARCH: '/api/users/search',
+        FRIEND_REQUEST: '/api/friends/request',
+        FRIEND_ACCEPT: '/api/friends/accept',
+        FRIEND_DECLINE: '/api/friends/decline',
+        FRIEND_CANCEL: '/api/friends/request',
+        FRIEND_REMOVE: '/api/friends/remove',
+        FRIENDS: '/api/friends',
+        PENDING_REQUESTS: '/api/friends/pending',
+        CONVERSATIONS: '/api/conversations',
+        MESSAGES: '/api/messages',
+        MARK_READ: '/api/messages/read',
+        UPLOAD: '/api/upload',
+    },
+
+    SOCKET: {
+        URL: resolveDefaultApiBaseUrl(),
+        PATH: '/socket.io',
+    }
+};
