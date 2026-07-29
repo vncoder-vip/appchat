@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -1095,7 +1095,7 @@
         // INIT
         // ==========================================
         (async function() {
-            var token = sessionStorage.getItem(CONFIG.TOKEN.ACCESS_TOKEN_KEY);
+            var token = AppStorage.getItem(CONFIG.TOKEN.ACCESS_TOKEN_KEY);
             if (!token) {
                 window.location.href = 'login.html';
                 return;
@@ -1120,7 +1120,7 @@
                 try {
                     var refreshData = await ApiClient.post(CONFIG.ENDPOINTS.REFRESH, {}, {});
                     if (refreshData.success && refreshData.accessToken) {
-                        sessionStorage.setItem(CONFIG.TOKEN.ACCESS_TOKEN_KEY, refreshData.accessToken);
+                        AppStorage.setItem(CONFIG.TOKEN.ACCESS_TOKEN_KEY, refreshData.accessToken);
                         window.location.reload();
                     } else {
                         window.location.href = 'login.html';

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -218,7 +218,7 @@
                         console.log('[Google] Backend response:', data);
                         if (data.success) {
                             ApiClient.setAccessToken(data.accessToken);
-                            sessionStorage.setItem(CONFIG.TOKEN.ACCESS_TOKEN_KEY, data.accessToken);
+                            AppStorage.setItem(CONFIG.TOKEN.ACCESS_TOKEN_KEY, data.accessToken);
                             Auth._user = data.user;
                             Auth._notify();
                             showMessage('Account created! Welcome to Chat chít.', 'success');
@@ -252,7 +252,7 @@
                     const verifyData = await ApiClient.post('/api/auth/phone/verify', { phone, code });
                     if (verifyData.success) {
                         ApiClient.setAccessToken(verifyData.accessToken);
-                        sessionStorage.setItem(CONFIG.TOKEN.ACCESS_TOKEN_KEY, verifyData.accessToken);
+                        AppStorage.setItem(CONFIG.TOKEN.ACCESS_TOKEN_KEY, verifyData.accessToken);
                         Auth._user = verifyData.user;
                         Auth._notify();
                         showMessage('Account created! Welcome to Chat chít.', 'success');

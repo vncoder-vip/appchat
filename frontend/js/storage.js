@@ -1,8 +1,8 @@
-/**
+﻿/**
  * Persistent Storage Utility
  * 
  * Uses localStorage for persistent login (survives browser close/restart).
- * Falls back to sessionStorage if localStorage is unavailable.
+ * Falls back to AppStorage if localStorage is unavailable.
  * 
  * NOTE: Uses 'AppStorage' instead of 'Storage' to avoid conflict with
  * the browser's built-in window.Storage interface.
@@ -22,9 +22,9 @@ const AppStorage = {
                 return localStorage;
             }
         } catch (e) {
-            // localStorage not available (private browsing, etc.), fallback to sessionStorage
+            // localStorage not available (private browsing, etc.), fallback to AppStorage
         }
-        return sessionStorage;
+        return AppStorage;
     },
 
     /**

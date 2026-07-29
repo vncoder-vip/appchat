@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Social Features - Search, Friends, Chat
  * Requires: config.js, utils.js, api.js, auth.js
  */
@@ -16,7 +16,7 @@ let socialState = {
 function initSocket() {
     if (socket && socket.connected) return;
 
-    const token = sessionStorage.getItem(CONFIG.TOKEN.ACCESS_TOKEN_KEY);
+    const token = AppStorage.getItem(CONFIG.TOKEN.ACCESS_TOKEN_KEY);
     if (!token) return;
 
     const url = CONFIG.SOCKET.URL || CONFIG.API_BASE_URL;

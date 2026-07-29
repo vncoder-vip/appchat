@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Authentication Service - Frontend Configuration
  * 
  * Chỉ cần thay đổi API_BASE_URL là có thể kết nối với Backend thật.
@@ -38,7 +38,7 @@ const CONFIG = {
     TOKEN: {
         ACCESS_TOKEN_KEY: 'authguard_access_token',
         REFRESH_TOKEN_KEY: 'authguard_refresh_token',
-        STORAGE: 'localStorage', // 'localStorage' for persistent, 'sessionStorage' for tab-only
+        STORAGE: 'localStorage', // 'localStorage' for persistent, 'AppStorage' for tab-only
     },
 
     ENDPOINTS: {
@@ -106,3 +106,4 @@ const CONFIG = {
         PATH: '/socket.io',
     }
 };
+

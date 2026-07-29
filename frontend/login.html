@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -184,7 +184,7 @@
                 const verifyData = await ApiClient.post('/api/auth/phone/verify', { phone, code });
                 if (verifyData.success) {
                     ApiClient.setAccessToken(verifyData.accessToken);
-                    sessionStorage.setItem(CONFIG.TOKEN.ACCESS_TOKEN_KEY, verifyData.accessToken);
+                    AppStorage.setItem(CONFIG.TOKEN.ACCESS_TOKEN_KEY, verifyData.accessToken);
                     Auth._user = verifyData.user;
                     Auth._notify();
                     showMsg('Login successful! Redirecting...', 'success');
