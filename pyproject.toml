@@ -1,7 +1,7 @@
 [project]
 name = "appchat"
 version = "1.0.0"
-requires-python = ">=3.12"
+requires-python = ">=3.9"
 dependencies = [
     "flask>=3.0.0",
     "flask-sqlalchemy>=3.0.0",
@@ -9,4 +9,8 @@ dependencies = [
     "python-dotenv>=1.0.0",
     "requests>=2.0.0",
     "werkzeug>=3.0.0",
+    "google-auth>=2.0.0",
+    "google-auth-oauthlib>=1.0.0",
+    "bcrypt>=4.0.0",
+    "gunicorn>=20.0.0",
 ]
